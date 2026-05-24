@@ -1,0 +1,15 @@
+package:
+  name: lipgloss
+  dependencies:
+    - effect
+    - prelude
+    - functions
+  build:
+    strict: true
+    pedantic_packages: true
+
+workspace:
+  package_set:
+    registry: 49.0.0
+  backend:
+    cmd: echo "uses psgo backend"
