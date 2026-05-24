@@ -1,131 +1,195 @@
 package lipgloss
 
 import (
-	lipgloss "github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/lipgloss"
 	. "github.com/purescript-native/go-runtime"
 )
 
 func init() {
 	exports := Foreign("Lipgloss")
 
-	exports["color"] = func(color_ Any) Any {
-		color := color_.(string)
-		return lipgloss.Color(color)
+	exports["color"] = func(s_ Any) Any {
+		return lipgloss.Color(s_.(string))
 	}
+
+	exports["adaptiveColorImpl"] = func(light_, dark_ Any) Any {
+		return lipgloss.AdaptiveColor{Light: light_.(string), Dark: dark_.(string)}
+	}
+
+	exports["completeColorImpl"] = func(trueColor_, ansi256_, ansi_ Any) Any {
+		return lipgloss.CompleteColor{
+			TrueColor: trueColor_.(string),
+			ANSI256:   ansi256_.(string),
+			ANSI:      ansi_.(string),
+		}
+	}
+
+	exports["noColor"] = lipgloss.NoColor{}
 
 	exports["newStyle"] = func() Any {
 		return lipgloss.NewStyle()
 	}
 
-	exports["renderImpl"] = func(style_ Any, text_ Any) Any {
-		style := style_.(lipgloss.Style)
-		text := text_.(string)
-		return style.Render(text)
+	exports["renderImpl"] = func(style_, text_ Any) Any {
+		return style_.(lipgloss.Style).Render(text_.(string))
 	}
 
-	exports["foregroundImpl"] = func(color_ Any, style_ Any) Any {
-		color := color_.(lipgloss.Color)
-		style := style_.(lipgloss.Style)
-		return style.Foreground(color)
+	exports["stringWidth"] = func(s_ Any) Any {
+		return lipgloss.Width(s_.(string))
 	}
 
-	exports["backgroundImpl"] = func(color_ Any, style_ Any) Any {
-		color := color_.(lipgloss.Color)
-		style := style_.(lipgloss.Style)
-		return style.Background(color)
+	exports["stringHeight"] = func(s_ Any) Any {
+		return lipgloss.Height(s_.(string))
 	}
 
-	exports["boldImpl"] = func(yesOrNo_ Any, style_ Any) Any {
-		yesOrNo := yesOrNo_.(bool)
-		style := style_.(lipgloss.Style)
-		return style.Bold(yesOrNo)
+	exports["foregroundImpl"] = func(c_, s_ Any) Any {
+		return s_.(lipgloss.Style).Foreground(c_.(lipgloss.TerminalColor))
+	}
+	exports["backgroundImpl"] = func(c_, s_ Any) Any {
+		return s_.(lipgloss.Style).Background(c_.(lipgloss.TerminalColor))
+	}
+	exports["boldImpl"] = func(b_, s_ Any) Any {
+		return s_.(lipgloss.Style).Bold(b_.(bool))
+	}
+	exports["italicImpl"] = func(b_, s_ Any) Any {
+		return s_.(lipgloss.Style).Italic(b_.(bool))
+	}
+	exports["underlineImpl"] = func(b_, s_ Any) Any {
+		return s_.(lipgloss.Style).Underline(b_.(bool))
+	}
+	exports["strikethroughImpl"] = func(b_, s_ Any) Any {
+		return s_.(lipgloss.Style).Strikethrough(b_.(bool))
+	}
+	exports["faintImpl"] = func(b_, s_ Any) Any {
+		return s_.(lipgloss.Style).Faint(b_.(bool))
+	}
+	exports["reverseImpl"] = func(b_, s_ Any) Any {
+		return s_.(lipgloss.Style).Reverse(b_.(bool))
+	}
+	exports["blinkImpl"] = func(b_, s_ Any) Any {
+		return s_.(lipgloss.Style).Blink(b_.(bool))
+	}
+	exports["inlineImpl"] = func(b_, s_ Any) Any {
+		return s_.(lipgloss.Style).Inline(b_.(bool))
 	}
 
-	exports["italicImpl"] = func(yesOrNo_ Any, style_ Any) Any {
-		yesOrNo := yesOrNo_.(bool)
-		style := style_.(lipgloss.Style)
-		return style.Italic(yesOrNo)
+	exports["paddingImpl"] = func(t_, r_, b_, l_, s_ Any) Any {
+		return s_.(lipgloss.Style).Padding(t_.(int), r_.(int), b_.(int), l_.(int))
+	}
+	exports["paddingTopImpl"] = func(n_, s_ Any) Any {
+		return s_.(lipgloss.Style).PaddingTop(n_.(int))
+	}
+	exports["paddingRightImpl"] = func(n_, s_ Any) Any {
+		return s_.(lipgloss.Style).PaddingRight(n_.(int))
+	}
+	exports["paddingBottomImpl"] = func(n_, s_ Any) Any {
+		return s_.(lipgloss.Style).PaddingBottom(n_.(int))
+	}
+	exports["paddingLeftImpl"] = func(n_, s_ Any) Any {
+		return s_.(lipgloss.Style).PaddingLeft(n_.(int))
 	}
 
-	exports["underlineImpl"] = func(yesOrNo_ Any, style_ Any) Any {
-		yesOrNo := yesOrNo_.(bool)
-		style := style_.(lipgloss.Style)
-		return style.Underline(yesOrNo)
+	exports["marginImpl"] = func(t_, r_, b_, l_, s_ Any) Any {
+		return s_.(lipgloss.Style).Margin(t_.(int), r_.(int), b_.(int), l_.(int))
+	}
+	exports["marginTopImpl"] = func(n_, s_ Any) Any {
+		return s_.(lipgloss.Style).MarginTop(n_.(int))
+	}
+	exports["marginRightImpl"] = func(n_, s_ Any) Any {
+		return s_.(lipgloss.Style).MarginRight(n_.(int))
+	}
+	exports["marginBottomImpl"] = func(n_, s_ Any) Any {
+		return s_.(lipgloss.Style).MarginBottom(n_.(int))
+	}
+	exports["marginLeftImpl"] = func(n_, s_ Any) Any {
+		return s_.(lipgloss.Style).MarginLeft(n_.(int))
 	}
 
-	exports["paddingImpl"] = func(top_ Any, right_ Any, bottom_ Any, left_ Any, style_ Any) Any {
-		top := top_.(int)
-		right := right_.(int)
-		bottom := bottom_.(int)
-		left := left_.(int)
-		style := style_.(lipgloss.Style)
-		return style.Padding(top, right, bottom, left)
+	exports["widthImpl"] = func(n_, s_ Any) Any {
+		return s_.(lipgloss.Style).Width(n_.(int))
+	}
+	exports["heightImpl"] = func(n_, s_ Any) Any {
+		return s_.(lipgloss.Style).Height(n_.(int))
+	}
+	exports["maxWidthImpl"] = func(n_, s_ Any) Any {
+		return s_.(lipgloss.Style).MaxWidth(n_.(int))
+	}
+	exports["maxHeightImpl"] = func(n_, s_ Any) Any {
+		return s_.(lipgloss.Style).MaxHeight(n_.(int))
 	}
 
-	exports["paddingTopImpl"] = func(top_ Any, style_ Any) Any {
-		top := top_.(int)
-		style := style_.(lipgloss.Style)
-		return style.PaddingTop(top)
-	}
-
-	exports["paddingRightImpl"] = func(right_ Any, style_ Any) Any {
-		right := right_.(int)
-		style := style_.(lipgloss.Style)
-		return style.PaddingRight(right)
-	}
-
-	exports["paddingBottomImpl"] = func(bottom_ Any, style_ Any) Any {
-		bottom := bottom_.(int)
-		style := style_.(lipgloss.Style)
-		return style.PaddingBottom(bottom)
-	}
-
-	exports["paddingLeftImpl"] = func(left_ Any, style_ Any) Any {
-		left := left_.(int)
-		style := style_.(lipgloss.Style)
-		return style.PaddingLeft(left)
-	}
-
-	exports["widthImpl"] = func(width_ Any, style_ Any) Any {
-		width := width_.(int)
-		style := style_.(lipgloss.Style)
-		return style.Width(width)
-	}
-
-	exports["borderStyleImpl"] = func(borderStyle_ Any, style_ Any) Any {
-		borderStyle := borderStyle_.(lipgloss.Border)
-		style := style_.(lipgloss.Style)
-		return style.BorderStyle(borderStyle)
-	}
-
-	exports["roundedBorder"] = lipgloss.RoundedBorder()
-
-	exports["borderForegroundImpl"] = func(color_ Any, style_ Any) Any {
-		color := color_.(lipgloss.Color)
-		style := style_.(lipgloss.Style)
-		return style.BorderForeground(color)
-	}
-
-	exports["centerV"] = lipgloss.Center
-	exports["centerH"] = lipgloss.Center
-	exports["left"] = lipgloss.Left
-	exports["right"] = lipgloss.Right
 	exports["top"] = lipgloss.Top
 	exports["bottom"] = lipgloss.Bottom
+	exports["left"] = lipgloss.Left
+	exports["right"] = lipgloss.Right
+	exports["center"] = lipgloss.Center
 
-	// lipgloss.PlaceHorizontal(80, lipgloss.Center, fancyStyledParagraph)
-	exports["placeHorizontalImpl"] = func(width_ Any, alignment_ Any, text_ Any) Any {
-		width := width_.(int)
-		alignment := alignment_.(lipgloss.Position)
-		text := text_.(string)
-		return lipgloss.PlaceHorizontal(width, alignment, text)
+	exports["alignImpl"] = func(h_, v_, s_ Any) Any {
+		return s_.(lipgloss.Style).Align(h_.(lipgloss.Position), v_.(lipgloss.Position))
+	}
+	exports["alignHorizontalImpl"] = func(p_, s_ Any) Any {
+		return s_.(lipgloss.Style).AlignHorizontal(p_.(lipgloss.Position))
+	}
+	exports["alignVerticalImpl"] = func(p_, s_ Any) Any {
+		return s_.(lipgloss.Style).AlignVertical(p_.(lipgloss.Position))
 	}
 
-	exports["placeVerticalImpl"] = func(height_ Any, alignment_ Any, text_ Any) Any {
-		height := height_.(int)
-		alignment := alignment_.(lipgloss.Position)
-		text := text_.(string)
-		return lipgloss.PlaceVertical(height, alignment, text)
+	exports["normalBorder"] = lipgloss.NormalBorder()
+	exports["roundedBorder"] = lipgloss.RoundedBorder()
+	exports["thickBorder"] = lipgloss.ThickBorder()
+	exports["doubleBorder"] = lipgloss.DoubleBorder()
+	exports["blockBorder"] = lipgloss.BlockBorder()
+	exports["hiddenBorder"] = lipgloss.HiddenBorder()
+
+	exports["borderStyleImpl"] = func(b_, s_ Any) Any {
+		return s_.(lipgloss.Style).BorderStyle(b_.(lipgloss.Border))
+	}
+	exports["borderImpl"] = func(b_, top_, right_, bottom_, left_, s_ Any) Any {
+		return s_.(lipgloss.Style).Border(b_.(lipgloss.Border), top_.(bool), right_.(bool), bottom_.(bool), left_.(bool))
+	}
+	exports["borderForegroundImpl"] = func(c_, s_ Any) Any {
+		return s_.(lipgloss.Style).BorderForeground(c_.(lipgloss.TerminalColor))
+	}
+	exports["borderBackgroundImpl"] = func(c_, s_ Any) Any {
+		return s_.(lipgloss.Style).BorderBackground(c_.(lipgloss.TerminalColor))
+	}
+	exports["borderTopImpl"] = func(b_, s_ Any) Any {
+		return s_.(lipgloss.Style).BorderTop(b_.(bool))
+	}
+	exports["borderRightImpl"] = func(b_, s_ Any) Any {
+		return s_.(lipgloss.Style).BorderRight(b_.(bool))
+	}
+	exports["borderBottomImpl"] = func(b_, s_ Any) Any {
+		return s_.(lipgloss.Style).BorderBottom(b_.(bool))
+	}
+	exports["borderLeftImpl"] = func(b_, s_ Any) Any {
+		return s_.(lipgloss.Style).BorderLeft(b_.(bool))
 	}
 
+	exports["placeImpl"] = func(w_, h_, hp_, vp_, str_ Any) Any {
+		return lipgloss.Place(w_.(int), h_.(int), hp_.(lipgloss.Position), vp_.(lipgloss.Position), str_.(string))
+	}
+	exports["placeHorizontalImpl"] = func(w_, p_, str_ Any) Any {
+		return lipgloss.PlaceHorizontal(w_.(int), p_.(lipgloss.Position), str_.(string))
+	}
+	exports["placeVerticalImpl"] = func(h_, p_, str_ Any) Any {
+		return lipgloss.PlaceVertical(h_.(int), p_.(lipgloss.Position), str_.(string))
+	}
+
+	exports["joinHorizontalImpl"] = func(p_, cols_ Any) Any {
+		cols := cols_.([]Any)
+		strs := make([]string, len(cols))
+		for i, c := range cols {
+			strs[i] = c.(string)
+		}
+		return lipgloss.JoinHorizontal(p_.(lipgloss.Position), strs...)
+	}
+	exports["joinVerticalImpl"] = func(p_, rows_ Any) Any {
+		rows := rows_.([]Any)
+		strs := make([]string, len(rows))
+		for i, r := range rows {
+			strs[i] = r.(string)
+		}
+		return lipgloss.JoinVertical(p_.(lipgloss.Position), strs...)
+	}
 }
