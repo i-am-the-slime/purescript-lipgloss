@@ -1,7 +1,9 @@
 package lipgloss
 
 import (
-	"github.com/charmbracelet/lipgloss"
+	"image/color"
+
+	"github.com/charmbracelet/lipgloss/v2"
 	. "github.com/purescript-native/go-runtime"
 )
 
@@ -13,18 +15,17 @@ func init() {
 	}
 
 	exports["adaptiveColorImpl"] = func(light_, dark_ Any) Any {
-		return lipgloss.AdaptiveColor{Light: light_.(string), Dark: dark_.(string)}
+		return lipgloss.LightDark(false)(lipgloss.Color(light_.(string)), lipgloss.Color(dark_.(string)))
 	}
 
-	exports["completeColorImpl"] = func(trueColor_, ansi256_, ansi_ Any) Any {
-		return lipgloss.CompleteColor{
-			TrueColor: trueColor_.(string),
-			ANSI256:   ansi256_.(string),
-			ANSI:      ansi_.(string),
-		}
+	exports["completeColorImpl"] = func(trueColor_, _, _ Any) Any {
+		// lipgloss v2 dropped CompleteColor: the colorprofile dependency now
+		// downsamples automatically. Honor the TrueColor entry and trust
+		// terminal detection for the fallbacks.
+		return lipgloss.Color(trueColor_.(string))
 	}
 
-	exports["noColor"] = lipgloss.NoColor{}
+	exports["noColor"] = color.Transparent
 
 	exports["newStyle"] = func() Any {
 		return lipgloss.NewStyle()
@@ -43,10 +44,10 @@ func init() {
 	}
 
 	exports["foregroundImpl"] = func(c_, s_ Any) Any {
-		return s_.(lipgloss.Style).Foreground(c_.(lipgloss.TerminalColor))
+		return s_.(lipgloss.Style).Foreground(c_.(color.Color))
 	}
 	exports["backgroundImpl"] = func(c_, s_ Any) Any {
-		return s_.(lipgloss.Style).Background(c_.(lipgloss.TerminalColor))
+		return s_.(lipgloss.Style).Background(c_.(color.Color))
 	}
 	exports["boldImpl"] = func(b_, s_ Any) Any {
 		return s_.(lipgloss.Style).Bold(b_.(bool))
@@ -148,10 +149,10 @@ func init() {
 		return s_.(lipgloss.Style).Border(b_.(lipgloss.Border), top_.(bool), right_.(bool), bottom_.(bool), left_.(bool))
 	}
 	exports["borderForegroundImpl"] = func(c_, s_ Any) Any {
-		return s_.(lipgloss.Style).BorderForeground(c_.(lipgloss.TerminalColor))
+		return s_.(lipgloss.Style).BorderForeground(c_.(color.Color))
 	}
 	exports["borderBackgroundImpl"] = func(c_, s_ Any) Any {
-		return s_.(lipgloss.Style).BorderBackground(c_.(lipgloss.TerminalColor))
+		return s_.(lipgloss.Style).BorderBackground(c_.(color.Color))
 	}
 	exports["borderTopImpl"] = func(b_, s_ Any) Any {
 		return s_.(lipgloss.Style).BorderTop(b_.(bool))
