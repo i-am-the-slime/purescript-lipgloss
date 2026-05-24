@@ -1,2 +1,6 @@
 .spago/
 output/
+examples/*/output/
+examples/*/.spago/
+examples/*/showcase
+examples/*/counter
