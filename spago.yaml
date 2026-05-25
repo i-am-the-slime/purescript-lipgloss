@@ -4,6 +4,10 @@ package:
     - effect
     - prelude
     - functions
+    - newtype
+    - strings
+    - foldable-traversable
+    - arrays
   build:
     strict: true
     pedantic_packages: true

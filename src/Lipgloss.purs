@@ -54,6 +54,8 @@ module Lipgloss
   , hiddenBorder
   , borderStyle
   , border
+  , borderAll
+  , borderSides
   , borderForeground
   , borderBackground
   , borderTop
@@ -251,6 +253,14 @@ foreign import borderImpl :: Fn6 BorderStyle Boolean Boolean Boolean Boolean Sty
 -- | `lipgloss.Style.Border(b, top, right, bottom, left)`.
 border :: BorderStyle -> { top :: Boolean, right :: Boolean, bottom :: Boolean, left :: Boolean } -> Style -> Style
 border b sides = runFn6 borderImpl b sides.top sides.right sides.bottom sides.left
+
+-- | Apply a border to all four sides.
+borderAll :: BorderStyle -> Style -> Style
+borderAll b = border b { top: true, right: true, bottom: true, left: true }
+
+-- | Alias for `border` that signals intent: explicit per-side toggles.
+borderSides :: BorderStyle -> { top :: Boolean, right :: Boolean, bottom :: Boolean, left :: Boolean } -> Style -> Style
+borderSides = border
 
 foreign import borderForegroundImpl :: Fn2 Color Style Style
 borderForeground :: Color -> Style -> Style
