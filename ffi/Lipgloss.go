@@ -27,9 +27,7 @@ func init() {
 
 	exports["noColor"] = color.Transparent
 
-	exports["newStyle"] = func() Any {
-		return lipgloss.NewStyle()
-	}
+	exports["newStyle"] = lipgloss.NewStyle()
 
 	exports["renderImpl"] = func(style_, text_ Any) Any {
 		return style_.(lipgloss.Style).Render(text_.(string))

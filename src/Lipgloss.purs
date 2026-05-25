@@ -75,7 +75,6 @@ module Lipgloss
   ) where
 
 import Data.Function.Uncurried (Fn2, Fn3, Fn5, Fn6, runFn2, runFn3, runFn5, runFn6)
-import Effect (Effect)
 
 foreign import data Color :: Type
 
@@ -98,7 +97,7 @@ foreign import noColor :: Color
 
 foreign import data Style :: Type
 
-foreign import newStyle :: Effect Style
+foreign import newStyle :: Style
 
 foreign import renderImpl :: Fn2 Style String String
 
