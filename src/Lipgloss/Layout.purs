@@ -20,7 +20,7 @@ import Data.Array (filter, replicate, zipWith)
 import Data.Foldable (sum)
 import Data.String (Pattern(..), split) as String
 import Data.String.Common (joinWith) as String
-import Lipgloss (BorderStyle, Color, Columns(..), Horizontal(..), Position, Rows(..), Vertical(..), borderAll, borderForeground, borderStyle, joinHorizontal, joinVertical, left, newStyle, render)
+import Lipgloss (Border, Color, Position, border, borderForeground, joinHorizontal, joinVertical, left, newStyle, render)
 import Lipgloss as L
 import Lipgloss.Painted (Painted, blankRow, unpaint)
 
@@ -33,7 +33,7 @@ data Layout
   | Fixed Int Layout
   | Flex Int Layout
   | Pad { top :: Int, right :: Int, bottom :: Int, left :: Int } Layout
-  | Border BorderStyle Color Layout
+  | Border Border Color Layout
 
 -- Friendly constructors so call sites read top-down.
 
@@ -55,7 +55,7 @@ flex = Flex
 pad :: { top :: Int, right :: Int, bottom :: Int, left :: Int } -> Layout -> Layout
 pad = Pad
 
-bordered :: BorderStyle -> Color -> Layout -> Layout
+bordered :: Border -> Color -> Layout -> Layout
 bordered = Border
 
 -- | Render a Layout tree into a multi-line string sized to fit the given
@@ -66,16 +66,14 @@ renderLayout box bg = case _ of
   Text painted -> unpaint painted
 
   Row align children ->
-    joinHorizontal (Vertical align)
-      $ Columns
+    joinHorizontal align
       $ zipWith
           (\size child -> renderLayout { width: size, height: box.height } bg child)
           (distribute box.width children)
           children
 
   Col align children ->
-    joinVertical (Horizontal align)
-      $ Rows
+    joinVertical align
       $ zipWith
           (\size child -> renderLayout { width: box.width, height: size } bg child)
           (distribute box.height children)
@@ -85,28 +83,22 @@ renderLayout box bg = case _ of
 
   Flex _ child -> renderLayout box bg child
 
-  Pad sides child ->
-    let
-      innerW = max 0 (box.width - sides.left - sides.right)
-      innerH = max 0 (box.height - sides.top - sides.bottom)
-      inner = renderLayout { width: innerW, height: innerH } bg child
-      leftPad = unpaint (blankRow bg sides.left)
-      rightPad = unpaint (blankRow bg sides.right)
-      padded = String.joinWith "\n"
-        ((\line -> leftPad <> line <> rightPad) <$> splitLines inner)
-      topBlanks = String.joinWith "\n" (replicate sides.top (unpaint (blankRow bg box.width)))
-      bottomBlanks = String.joinWith "\n" (replicate sides.bottom (unpaint (blankRow bg box.width)))
-    in
-      String.joinWith "\n" (filter (_ /= "") [ topBlanks, padded, bottomBlanks ])
+  Pad sides child -> renderPadded box bg sides child
 
-  Border b color child ->
-    let
-      innerW = max 0 (box.width - 2)
-      innerH = max 0 (box.height - 2)
-      inner = renderLayout { width: innerW, height: innerH } bg child
-      styled = borderForeground color (borderStyle b (borderAll b newStyle))
-    in
-      render styled (L.Text inner)
+  Border kind color child -> renderBordered box bg kind color child
+
+renderPadded :: { width :: Int, height :: Int } -> Color -> { top :: Int, right :: Int, bottom :: Int, left :: Int } -> Layout -> String
+renderPadded box bg sides child = String.joinWith "\n" (filter (_ /= "") [ blanks sides.top, padded, blanks sides.bottom ])
+  where
+  inner = renderLayout { width: max 0 (box.width - sides.left - sides.right), height: max 0 (box.height - sides.top - sides.bottom) } bg child
+  padded = String.joinWith "\n" ((\line -> gap sides.left <> line <> gap sides.right) <$> splitLines inner)
+  gap n = unpaint (blankRow bg n)
+  blanks n = String.joinWith "\n" (replicate n (gap box.width))
+
+renderBordered :: { width :: Int, height :: Int } -> Color -> Border -> Color -> Layout -> String
+renderBordered box bg kind color child = render (borderForeground color (border kind newStyle)) inner
+  where
+  inner = renderLayout { width: max 0 (box.width - 2), height: max 0 (box.height - 2) } bg child
 
 splitLines :: String -> Array String
 splitLines = String.split (String.Pattern "\n")

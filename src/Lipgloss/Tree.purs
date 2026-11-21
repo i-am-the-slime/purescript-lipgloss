@@ -1,71 +1,57 @@
+-- | Trees, like a file browser shows them.
+-- |
+-- |     Tree.render (Node "src" [ Leaf "Main.purs", Node "Data" [ Leaf "List.purs" ] ])
 module Lipgloss.Tree
-  ( Tree
-  , Enumerator
-  , new
+  ( Tree(..)
   , render
-  , root
-  , child
-  , childTree
-  , enumerator
-  , enumeratorStyle
-  , rootStyle
-  , itemStyle
-  , offset
-  , hide
+  , renderWith
+  , Looks
+  , defaultLooks
+  , Enumerator
   , defaultEnumerator
   , roundedEnumerator
   ) where
 
-import Data.Function.Uncurried (Fn2, runFn2)
-import Effect (Effect)
-import Lipgloss (Style)
+import Prelude
 
-foreign import data Tree :: Type
+import Lipgloss (Style, newStyle)
+
+data Tree = Leaf String | Node String (Array Tree)
+
+-- | How a tree is drawn.
+type Looks =
+  { enumerator :: Enumerator
+  , enumeratorStyle :: Style
+  , rootStyle :: Style
+  , itemStyle :: Style
+  }
+
+defaultLooks :: Looks
+defaultLooks = { enumerator: defaultEnumerator, enumeratorStyle: newStyle, rootStyle: newStyle, itemStyle: newStyle }
+
+render :: Tree -> String
+render = renderWith defaultLooks
+
+renderWith :: Looks -> Tree -> String
+renderWith looks tree = renderImpl (native tree)
+  where
+  native = case _ of
+    Leaf text -> treeImpl looks.enumerator looks.enumeratorStyle looks.rootStyle looks.itemStyle text []
+    Node text children -> treeImpl looks.enumerator looks.enumeratorStyle looks.rootStyle looks.itemStyle text (map child children)
+  child = case _ of
+    Leaf text -> leafNode text
+    node -> subtreeNode (native node)
+
+-- | The lines that lead to an item: `├──` or `╰──`.
 foreign import data Enumerator :: Type
-
-foreign import new :: Effect Tree
-
-foreign import render :: Tree -> String
-
-foreign import rootImpl :: Fn2 String Tree Tree
-root :: String -> Tree -> Tree
-root = runFn2 rootImpl
-
-foreign import childImpl :: Fn2 (Array String) Tree Tree
-
--- | Add leaf children (strings).
-child :: Array String -> Tree -> Tree
-child = runFn2 childImpl
-
-foreign import childTreeImpl :: Fn2 Tree Tree Tree
-
--- | Nest a subtree as a child.
-childTree :: Tree -> Tree -> Tree
-childTree = runFn2 childTreeImpl
-
-foreign import enumeratorImpl :: Fn2 Enumerator Tree Tree
-enumerator :: Enumerator -> Tree -> Tree
-enumerator = runFn2 enumeratorImpl
-
-foreign import enumeratorStyleImpl :: Fn2 Style Tree Tree
-enumeratorStyle :: Style -> Tree -> Tree
-enumeratorStyle = runFn2 enumeratorStyleImpl
-
-foreign import rootStyleImpl :: Fn2 Style Tree Tree
-rootStyle :: Style -> Tree -> Tree
-rootStyle = runFn2 rootStyleImpl
-
-foreign import itemStyleImpl :: Fn2 Style Tree Tree
-itemStyle :: Style -> Tree -> Tree
-itemStyle = runFn2 itemStyleImpl
-
-foreign import offsetImpl :: Fn2 { start :: Int, end :: Int } Tree Tree
-offset :: { start :: Int, end :: Int } -> Tree -> Tree
-offset = runFn2 offsetImpl
-
-foreign import hideImpl :: Fn2 Boolean Tree Tree
-hide :: Boolean -> Tree -> Tree
-hide = runFn2 hideImpl
 
 foreign import defaultEnumerator :: Enumerator
 foreign import roundedEnumerator :: Enumerator
+
+foreign import data NativeTree :: Type
+foreign import data Child :: Type
+
+foreign import treeImpl :: Enumerator -> Style -> Style -> Style -> String -> Array Child -> NativeTree
+foreign import leafNode :: String -> Child
+foreign import subtreeNode :: NativeTree -> Child
+foreign import renderImpl :: NativeTree -> String

@@ -1,118 +1,96 @@
+-- | Tables.
+-- |
+-- |     Table.render Table.defaults
+-- |       { headers = [ "Language", "Formal" ]
+-- |       , rows = [ [ "German", "Guten Tag" ], [ "Japanese", "こんにちは" ] ]
+-- |       , border = L.roundedBorder
+-- |       , style = \row _ -> if row == Table.header then bold else plain
+-- |       }
 module Lipgloss.Table
   ( Table
-  , Data
-  , StyleFunc
-  , new
+  , defaults
+  , header
   , render
-  , rows
-  , row
-  , headers
-  , data_
-  , border
-  , borderStyle
-  , borderTop
-  , borderBottom
-  , borderLeft
-  , borderRight
-  , borderHeader
-  , borderColumn
-  , borderRow
-  , borderForeground
-  , width
-  , height
-  , offset
-  , wrap
-  , styleFunc
   ) where
 
-import Data.Function.Uncurried (Fn2, runFn2)
-import Effect (Effect)
-import Lipgloss (BorderStyle, Color, Style)
+import Prelude
 
-foreign import data Table :: Type
+import Lipgloss (Border, Style, newStyle, normalBorder)
 
-foreign import data Data :: Type
+type Table =
+  { headers :: Array String
+  , rows :: Array (Array String)
+  , border :: Border
+  , borderStyle :: Style
+  , borders ::
+      { top :: Boolean
+      , bottom :: Boolean
+      , left :: Boolean
+      , right :: Boolean
+      , header :: Boolean
+      , columns :: Boolean
+      , rows :: Boolean
+      }
+  -- | `0` fits the content.
+  , width :: Int
+  -- | `0` fits the content.
+  , height :: Int
+  -- | The first row to show.
+  , offset :: Int
+  , wrap :: Boolean
+  -- | The style of the cell in a row and column. The headers are row `header`.
+  , style :: Int -> Int -> Style
+  }
 
-type StyleFunc = { row :: Int, col :: Int } -> Style
+defaults :: Table
+defaults =
+  { headers: []
+  , rows: []
+  , border: normalBorder
+  , borderStyle: newStyle
+  , borders: { top: true, bottom: true, left: true, right: true, header: true, columns: true, rows: false }
+  , width: 0
+  , height: 0
+  , offset: 0
+  , wrap: true
+  , style: \_ _ -> newStyle
+  }
 
-foreign import new :: Effect Table
+-- | The row number of the headers, in `style`.
+header :: Int
+header = -1
 
-foreign import render :: Table -> String
+render :: Table -> String
+render table =
+  renderImpl table.headers table.rows table.border table.borderStyle
+    table.borders.top
+    table.borders.bottom
+    table.borders.left
+    table.borders.right
+    table.borders.header
+    table.borders.columns
+    table.borders.rows
+    table.width
+    table.height
+    table.offset
+    table.wrap
+    table.style
 
-foreign import rowsImpl :: Fn2 (Array (Array String)) Table Table
-rows :: Array (Array String) -> Table -> Table
-rows = runFn2 rowsImpl
-
-foreign import rowImpl :: Fn2 (Array String) Table Table
-row :: Array String -> Table -> Table
-row = runFn2 rowImpl
-
-foreign import headersImpl :: Fn2 (Array String) Table Table
-headers :: Array String -> Table -> Table
-headers = runFn2 headersImpl
-
-foreign import dataImpl :: Fn2 Data Table Table
-data_ :: Data -> Table -> Table
-data_ = runFn2 dataImpl
-
-foreign import borderImpl :: Fn2 BorderStyle Table Table
-border :: BorderStyle -> Table -> Table
-border = runFn2 borderImpl
-
-foreign import borderStyleImpl :: Fn2 Style Table Table
-borderStyle :: Style -> Table -> Table
-borderStyle = runFn2 borderStyleImpl
-
-foreign import borderTopImpl :: Fn2 Boolean Table Table
-borderTop :: Boolean -> Table -> Table
-borderTop = runFn2 borderTopImpl
-
-foreign import borderBottomImpl :: Fn2 Boolean Table Table
-borderBottom :: Boolean -> Table -> Table
-borderBottom = runFn2 borderBottomImpl
-
-foreign import borderLeftImpl :: Fn2 Boolean Table Table
-borderLeft :: Boolean -> Table -> Table
-borderLeft = runFn2 borderLeftImpl
-
-foreign import borderRightImpl :: Fn2 Boolean Table Table
-borderRight :: Boolean -> Table -> Table
-borderRight = runFn2 borderRightImpl
-
-foreign import borderHeaderImpl :: Fn2 Boolean Table Table
-borderHeader :: Boolean -> Table -> Table
-borderHeader = runFn2 borderHeaderImpl
-
-foreign import borderColumnImpl :: Fn2 Boolean Table Table
-borderColumn :: Boolean -> Table -> Table
-borderColumn = runFn2 borderColumnImpl
-
-foreign import borderRowImpl :: Fn2 Boolean Table Table
-borderRow :: Boolean -> Table -> Table
-borderRow = runFn2 borderRowImpl
-
-foreign import borderForegroundImpl :: Fn2 Color Table Table
-borderForeground :: Color -> Table -> Table
-borderForeground = runFn2 borderForegroundImpl
-
-foreign import widthImpl :: Fn2 Int Table Table
-width :: Int -> Table -> Table
-width = runFn2 widthImpl
-
-foreign import heightImpl :: Fn2 Int Table Table
-height :: Int -> Table -> Table
-height = runFn2 heightImpl
-
-foreign import offsetImpl :: Fn2 Int Table Table
-offset :: Int -> Table -> Table
-offset = runFn2 offsetImpl
-
-foreign import wrapImpl :: Fn2 Boolean Table Table
-wrap :: Boolean -> Table -> Table
-wrap = runFn2 wrapImpl
-
-foreign import styleFuncImpl :: Fn2 StyleFunc Table Table
-
--- | Per-cell styling. `{ row: -1, col: c }` targets header cells.
-styleFunc :: StyleFunc -> Table -> Table
-styleFunc = runFn2 styleFuncImpl
+foreign import renderImpl
+  :: Array String
+  -> Array (Array String)
+  -> Border
+  -> Style
+  -> Boolean
+  -> Boolean
+  -> Boolean
+  -> Boolean
+  -> Boolean
+  -> Boolean
+  -> Boolean
+  -> Int
+  -> Int
+  -> Int
+  -> Boolean
+  -> (Int -> Int -> Style)
+  -> String

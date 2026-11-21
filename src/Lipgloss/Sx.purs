@@ -10,7 +10,7 @@
 -- |       Border L.normalBorder Style.right
 -- |       BorderFg C.charcoal
 -- |
--- |     L.render (toStyle style) (Text "hi")
+-- |     Style.render style "hi"
 module Lipgloss.Sx
   ( Sx(..)
   , toStyle
@@ -25,7 +25,7 @@ module Lipgloss.Sx
 import Prelude hiding (top, bottom)
 
 import Data.Newtype (class Newtype, un)
-import Lipgloss (BorderBottomOn(..), BorderLeftOn(..), BorderRightOn(..), BorderStyle, BorderTopOn(..), Color, Horizontal, Style, Text, Vertical, newStyle)
+import Lipgloss (Border, Color, Position, Style, newStyle)
 import Lipgloss as L
 
 -- | Every visual property the user can declare. `Compose` and `None`
@@ -71,14 +71,14 @@ data Sx
   | Inline Boolean
 
   -- Borders
-  | Border BorderStyle Sides
+  | Border Border Sides
   | BorderFg Color
   | BorderBg Color
 
   -- Alignment
-  | Align Horizontal Vertical
-  | AlignH Horizontal
-  | AlignV Vertical
+  | Align Position Position
+  | AlignH Position
+  | AlignV Position
 
 instance Semigroup Sx where
   append = Compose
@@ -98,47 +98,44 @@ toStyle = go newStyle
     Fg c -> L.foreground c s
     Bg c -> L.background c s
 
-    Width n -> L.width (L.Width n) s
-    Height n -> L.height (L.Height n) s
-    MaxWidth n -> L.maxWidth (L.MaxWidth n) s
-    MaxHeight n -> L.maxHeight (L.MaxHeight n) s
+    Width n -> L.width n s
+    Height n -> L.height n s
+    MaxWidth n -> L.maxWidth n s
+    MaxHeight n -> L.maxHeight n s
 
-    PadT n -> L.paddingTop (L.PadT n) s
-    PadR n -> L.paddingRight (L.PadR n) s
-    PadB n -> L.paddingBottom (L.PadB n) s
-    PadL n -> L.paddingLeft (L.PadL n) s
-    PadX n -> L.paddingLeft (L.PadL n) (L.paddingRight (L.PadR n) s)
-    PadY n -> L.paddingTop (L.PadT n) (L.paddingBottom (L.PadB n) s)
+    PadT n -> L.paddingTop n s
+    PadR n -> L.paddingRight n s
+    PadB n -> L.paddingBottom n s
+    PadL n -> L.paddingLeft n s
+    PadX n -> L.paddingLeft n (L.paddingRight n s)
+    PadY n -> L.paddingTop n (L.paddingBottom n s)
 
-    MarT n -> L.marginTop (L.MarT n) s
-    MarR n -> L.marginRight (L.MarR n) s
-    MarB n -> L.marginBottom (L.MarB n) s
-    MarL n -> L.marginLeft (L.MarL n) s
-    MarX n -> L.marginLeft (L.MarL n) (L.marginRight (L.MarR n) s)
-    MarY n -> L.marginTop (L.MarT n) (L.marginBottom (L.MarB n) s)
+    MarT n -> L.marginTop n s
+    MarR n -> L.marginRight n s
+    MarB n -> L.marginBottom n s
+    MarL n -> L.marginLeft n s
+    MarX n -> L.marginLeft n (L.marginRight n s)
+    MarY n -> L.marginTop n (L.marginBottom n s)
 
-    Bold b -> L.bold (L.Bold b) s
-    Italic b -> L.italic (L.Italic b) s
-    Underline b -> L.underline (L.Underline b) s
-    Strikethrough b -> L.strikethrough (L.Strikethrough b) s
-    Faint b -> L.faint (L.Faint b) s
-    ReverseVideo b -> L.reverseVideo (L.ReverseVideo b) s
-    Blink b -> L.blink (L.Blink b) s
-    Inline b -> L.inline (L.Inline b) s
+    Bold b -> L.bold b s
+    Italic b -> L.italic b s
+    Underline b -> L.underline b s
+    Strikethrough b -> L.strikethrough b s
+    Faint b -> L.faint b s
+    ReverseVideo b -> L.reverseVideo b s
+    Blink b -> L.blink b s
+    Inline b -> L.inline b s
 
-    Border bs sides ->
-      let sd = un Sides sides
-      in L.border bs (BorderTopOn sd.top) (BorderRightOn sd.right) (BorderBottomOn sd.bottom) (BorderLeftOn sd.left)
-           (L.borderStyle bs s)
+    Border kind sides -> L.borderSides kind (un Sides sides) s
     BorderFg c -> L.borderForeground c s
     BorderBg c -> L.borderBackground c s
 
-    Align hp vp -> L.align hp vp s
-    AlignH hp -> L.alignHorizontal hp s
-    AlignV vp -> L.alignVertical vp s
+    Align horizontal vertical -> L.align horizontal vertical s
+    AlignH horizontal -> L.alignHorizontal horizontal s
+    AlignV vertical -> L.alignVertical vertical s
 
 -- | Render text through an Sx — the common case.
-render :: Sx -> Text -> String
+render :: Sx -> String -> String
 render sx = L.render (toStyle sx)
 
 -- | Powers `Style.do` — concatenate adjacent statements.

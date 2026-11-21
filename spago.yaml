@@ -1,23 +1,18 @@
 package:
   name: lipgloss
+  description: Lip Gloss styles, borders and layout for PureScript compiled to Go with Iris
   dependencies:
-    - effect
-    - prelude
-    - functions
-    - newtype
-    - strings
-    - foldable-traversable
     - arrays
-    - transformers
-    - tuples
-    - identity
-    - const
-  build:
-    strict: true
-    pedantic_packages: true
-
+    - foldable-traversable
+    - newtype
+    - prelude
+    - strings
+  test:
+    main: Test.Main
+    dependencies:
+      - aff
+      - effect
+      - spec
 workspace:
-  package_set:
-    registry: 49.0.0
-  backend:
-    cmd: echo "uses psgo backend"
+  packageSet:
+    registry: 73.2.0
