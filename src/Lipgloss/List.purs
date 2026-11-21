@@ -38,12 +38,18 @@ list texts = { items: map Item texts, enumerator: bullet, enumeratorStyle: paddi
 render :: List -> String
 render = renderImpl <<< native
 
+foreign import renderImpl :: NativeList -> String
+
 native :: List -> NativeList
 native { items, enumerator, enumeratorStyle, itemStyle } = listImpl enumerator enumeratorStyle itemStyle (map node items)
   where
   node = case _ of
     Item text -> itemNode text
     Nested inner -> nestedNode (native inner)
+
+foreign import listImpl :: Enumerator -> Style -> Style -> Array Node -> NativeList
+foreign import itemNode :: String -> Node
+foreign import nestedNode :: NativeList -> Node
 
 -- | What goes in front of an item: `•`, `1.`, `a.`, `I.` and so on.
 foreign import data Enumerator :: Type
@@ -57,8 +63,3 @@ foreign import roman :: Enumerator
 
 foreign import data NativeList :: Type
 foreign import data Node :: Type
-
-foreign import listImpl :: Enumerator -> Style -> Style -> Array Node -> NativeList
-foreign import itemNode :: String -> Node
-foreign import nestedNode :: NativeList -> Node
-foreign import renderImpl :: NativeList -> String
