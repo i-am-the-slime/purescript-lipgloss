@@ -8,6 +8,7 @@ import Effect (Effect)
 import Effect.Aff (launchAff_)
 import Effect.Class (liftEffect)
 import Lipgloss as L
+import Lipgloss.Charmtone as C
 import Lipgloss.Layout as Layout
 import Lipgloss.List (Item(..))
 import Lipgloss.List as List
@@ -42,6 +43,10 @@ specs = describe "Lipgloss" do
   it "builds the same style from an Sx block" do
     Style.render box "hi" `shouldEqual` "╭────╮\n│ hi │\n╰────╯"
 
+  it "adds a property only when guarded true" do
+    Style.render (selected 1) "x" `shouldEqual` Style.render (Bg C.charple) "x"
+    Style.render (selected 0) "x" `shouldEqual` "x"
+
   it "measures text without its styles" do
     L.stringWidth (L.render (L.newStyle # L.bold true # L.foreground (L.color "#FF60FF")) "hello") `shouldEqual` 5
     L.stringHeight "a\nb\nc" `shouldEqual` 3
@@ -68,6 +73,9 @@ specs = describe "Lipgloss" do
     Tree.render (Node "src" [ Leaf "Main.purs", Node "Data" [ Leaf "List.purs" ] ])
       `shouldEqual` "src\n├── Main.purs\n└── Data\n    └── List.purs"
 
+  it "paints a header across the whole row" do
+    L.stringWidth (unpaint (chrome.bold C.charple " CRUSH " <> chrome.plain C.smoke "  ~/code" <> blankRow C.bbq 20)) `shouldEqual` 35
+
   it "paints spans on a shared background" do
     L.stringWidth (unpaint (chrome.plain (L.color "#FFFFFF") "abc" <> blankRow (L.color "#000000") 2)) `shouldEqual` 5
 
@@ -75,6 +83,7 @@ specs = describe "Lipgloss" do
     L.stringWidth (Layout.renderLayout { width: 20, height: 1 } (L.color "#000000") (Layout.row [ Layout.fixed 5 (Layout.text (chrome.raw "left")), Layout.flex 1 (Layout.text (chrome.raw "right")) ]))
       `shouldEqual` 9
   where
+  selected i = Bg C.charple # Style.guard (i == 1)
   chrome = paint (L.color "#000000")
   box = Style.do
     Border L.roundedBorder Style.all
