@@ -8,6 +8,10 @@ package:
     - strings
     - foldable-traversable
     - arrays
+    - transformers
+    - tuples
+    - identity
+    - const
   build:
     strict: true
     pedantic_packages: true

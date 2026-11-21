@@ -10,9 +10,9 @@ main :: Effect Unit
 main = do
   base <- L.newStyle
   let
-    pink = L.color "#ff5fff"
-    cyan = L.color "#5fd7d7"
-    grey = L.color "240"
+    pink = L.color (Hex "#ff5fff")
+    cyan = L.color (Hex "#5fd7d7")
+    grey = L.color (Hex "240")
     adaptive = L.adaptiveColor { light: "#222", dark: "#eee" }
     complete = L.completeColor { trueColor: "#ff5fff", ansi256: "207", ansi: "5" }
 

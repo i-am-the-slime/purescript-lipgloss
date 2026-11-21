@@ -2,15 +2,17 @@ package lipgloss
 
 import (
 	"image/color"
+	"strings"
 
 	"github.com/charmbracelet/lipgloss/v2"
+	"github.com/charmbracelet/x/ansi"
 	. "github.com/purescript-native/go-runtime"
 )
 
 func init() {
 	exports := Foreign("Lipgloss")
 
-	exports["color"] = func(s_ Any) Any {
+	exports["colorImpl"] = func(s_ Any) Any {
 		return lipgloss.Color(s_.(string))
 	}
 
@@ -35,6 +37,31 @@ func init() {
 
 	exports["stringWidth"] = func(s_ Any) Any {
 		return lipgloss.Width(s_.(string))
+	}
+
+	exports["placeOverlayImpl"] = func(x_, y_, overlay_, base_ Any) Any {
+		x := x_.(int)
+		y := y_.(int)
+		overlay := overlay_.(string)
+		base := base_.(string)
+		baseLines := strings.Split(base, "\n")
+		overlayLines := strings.Split(overlay, "\n")
+		overlayW := lipgloss.Width(overlay)
+		for i, oline := range overlayLines {
+			row := y + i
+			if row < 0 || row >= len(baseLines) {
+				continue
+			}
+			bline := baseLines[row]
+			left := ansi.Truncate(bline, x, "")
+			leftW := lipgloss.Width(left)
+			if leftW < x {
+				left += strings.Repeat(" ", x-leftW)
+			}
+			right := ansi.TruncateLeft(bline, x+overlayW, "")
+			baseLines[row] = left + oline + right
+		}
+		return strings.Join(baseLines, "\n")
 	}
 
 	exports["stringHeight"] = func(s_ Any) Any {

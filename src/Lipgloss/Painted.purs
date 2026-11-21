@@ -14,12 +14,13 @@ module Lipgloss.Painted
   , unpaint
   , text
   , blankRow
+  , padToWidth
   ) where
 
 import Prelude
 
 import Data.Newtype (class Newtype, un)
-import Lipgloss (Color, background, bold, faint, foreground, newStyle, render)
+import Lipgloss (Bold(..), Color, Faint(..), Text(..), background, bold, faint, foreground, newStyle, render, stringWidth)
 
 newtype Painted = Painted { bg :: Color, text :: String }
 
@@ -41,9 +42,9 @@ type Painter =
 
 paint :: Color -> Painter
 paint bg =
-  { plain: \fg s -> Painted { bg, text: render (base fg) s }
-  , bold: \fg s -> Painted { bg, text: render (bold true (base fg)) s }
-  , dim: \fg s -> Painted { bg, text: render (faint true (base fg)) s }
+  { plain: \fg s -> Painted { bg, text: render (base fg) (Text s) }
+  , bold: \fg s -> Painted { bg, text: render (bold (Bold true) (base fg)) (Text s) }
+  , dim: \fg s -> Painted { bg, text: render (faint (Faint true) (base fg)) (Text s) }
   , raw: \s -> Painted { bg, text: s }
   }
   where
@@ -61,8 +62,16 @@ text = unpaint
 -- | A horizontal run of `n` bg-painted spaces — useful for filling rows so
 -- | the chrome color reaches all the way across a panel.
 blankRow :: Color -> Int -> Painted
-blankRow bg n = Painted { bg, text: render (background bg newStyle) (spaces n) }
+blankRow bg n = Painted { bg, text: render (background bg newStyle) (Text (spaces n)) }
   where
   spaces k
     | k <= 0 = ""
     | otherwise = " " <> spaces (k - 1)
+
+-- | Pad a painted span to the given visual width by appending bg-painted
+-- | spaces on the right. The bg of the existing Painted is used.
+padToWidth :: Int -> Painted -> Painted
+padToWidth target p@(Painted { bg, text: t }) =
+  let current = stringWidth t
+      fillCount = max 0 (target - current)
+  in p <> blankRow bg fillCount

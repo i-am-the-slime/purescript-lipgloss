@@ -20,8 +20,8 @@ import Data.Array (filter, replicate, zipWith)
 import Data.Foldable (sum)
 import Data.String (Pattern(..), split) as String
 import Data.String.Common (joinWith) as String
-import Lipgloss (BorderStyle, Color, Position, borderAll, borderForeground, borderStyle, joinHorizontal, joinVertical, left, newStyle, render)
-import Lipgloss (top) as L
+import Lipgloss (BorderStyle, Color, Columns(..), Horizontal(..), Position, Rows(..), Vertical(..), borderAll, borderForeground, borderStyle, joinHorizontal, joinVertical, left, newStyle, render)
+import Lipgloss as L
 import Lipgloss.Painted (Painted, blankRow, unpaint)
 
 -- | A box. `Row` / `Col` lay out children; `Fixed` and `Flex` mark sizing
@@ -66,14 +66,16 @@ renderLayout box bg = case _ of
   Text painted -> unpaint painted
 
   Row align children ->
-    joinHorizontal align
+    joinHorizontal (Vertical align)
+      $ Columns
       $ zipWith
           (\size child -> renderLayout { width: size, height: box.height } bg child)
           (distribute box.width children)
           children
 
   Col align children ->
-    joinVertical align
+    joinVertical (Horizontal align)
+      $ Rows
       $ zipWith
           (\size child -> renderLayout { width: box.width, height: size } bg child)
           (distribute box.height children)
@@ -104,7 +106,7 @@ renderLayout box bg = case _ of
       inner = renderLayout { width: innerW, height: innerH } bg child
       styled = borderForeground color (borderStyle b (borderAll b newStyle))
     in
-      render styled inner
+      render styled (L.Text inner)
 
 splitLines :: String -> Array String
 splitLines = String.split (String.Pattern "\n")
