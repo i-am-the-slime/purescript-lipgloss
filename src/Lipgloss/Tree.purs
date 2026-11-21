@@ -14,7 +14,7 @@ module Lipgloss.Tree
 
 import Prelude
 
-import Lipgloss (Style, newStyle)
+import Lipgloss (Style, newStyle, paddingRight)
 
 data Tree = Leaf String | Node String (Array Tree)
 
@@ -27,7 +27,7 @@ type Looks =
   }
 
 defaultLooks :: Looks
-defaultLooks = { enumerator: defaultEnumerator, enumeratorStyle: newStyle, rootStyle: newStyle, itemStyle: newStyle }
+defaultLooks = { enumerator: defaultEnumerator, enumeratorStyle: paddingRight 1 newStyle, rootStyle: newStyle, itemStyle: newStyle }
 
 render :: Tree -> String
 render = renderWith defaultLooks

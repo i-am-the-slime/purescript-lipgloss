@@ -1,0 +1,13 @@
+package:
+  name: lipgloss-examples
+  dependencies:
+    - console
+    - effect
+    - lipgloss
+    - prelude
+workspace:
+  packageSet:
+    registry: 73.2.0
+  extraPackages:
+    lipgloss:
+      path: ..

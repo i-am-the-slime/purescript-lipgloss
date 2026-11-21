@@ -20,7 +20,7 @@ module Lipgloss.List
 
 import Prelude
 
-import Lipgloss (Style, newStyle)
+import Lipgloss (Style, newStyle, paddingRight)
 
 type List =
   { items :: Array Item
@@ -33,7 +33,7 @@ data Item = Item String | Nested List
 
 -- | A bulleted list of plain items.
 list :: Array String -> List
-list texts = { items: map Item texts, enumerator: bullet, enumeratorStyle: newStyle, itemStyle: newStyle }
+list texts = { items: map Item texts, enumerator: bullet, enumeratorStyle: paddingRight 1 newStyle, itemStyle: newStyle }
 
 render :: List -> String
 render = renderImpl <<< native
