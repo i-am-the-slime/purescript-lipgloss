@@ -2,4 +2,4 @@ package ffi
 
 import "os"
 
-func Exit(code int32) { os.Exit(int(code)) }
+func Exit(code int) { os.Exit(code) }

@@ -28,8 +28,8 @@ var NewStyle = lipgloss.NewStyle()
 
 func RenderImpl(style lipgloss.Style, text string) string { return style.Render(text) }
 
-func StringWidthImpl(text string) int32  { return int32(lipgloss.Width(text)) }
-func StringHeightImpl(text string) int32 { return int32(lipgloss.Height(text)) }
+func StringWidthImpl(text string) int  { return lipgloss.Width(text) }
+func StringHeightImpl(text string) int { return lipgloss.Height(text) }
 
 func ForegroundImpl(c color.Color, s lipgloss.Style) lipgloss.Style { return s.Foreground(c) }
 func BackgroundImpl(c color.Color, s lipgloss.Style) lipgloss.Style { return s.Background(c) }
@@ -43,29 +43,29 @@ func ReverseImpl(on bool, s lipgloss.Style) lipgloss.Style       { return s.Reve
 func BlinkImpl(on bool, s lipgloss.Style) lipgloss.Style         { return s.Blink(on) }
 func InlineImpl(on bool, s lipgloss.Style) lipgloss.Style        { return s.Inline(on) }
 
-func PaddingImpl(top, right, bottom, left int32, s lipgloss.Style) lipgloss.Style {
-	return s.Padding(int(top), int(right), int(bottom), int(left))
+func PaddingImpl(top, right, bottom, left int, s lipgloss.Style) lipgloss.Style {
+	return s.Padding(top, right, bottom, left)
 }
-func PaddingTopImpl(n int32, s lipgloss.Style) lipgloss.Style    { return s.PaddingTop(int(n)) }
-func PaddingRightImpl(n int32, s lipgloss.Style) lipgloss.Style  { return s.PaddingRight(int(n)) }
-func PaddingBottomImpl(n int32, s lipgloss.Style) lipgloss.Style { return s.PaddingBottom(int(n)) }
-func PaddingLeftImpl(n int32, s lipgloss.Style) lipgloss.Style   { return s.PaddingLeft(int(n)) }
+func PaddingTopImpl(n int, s lipgloss.Style) lipgloss.Style    { return s.PaddingTop(n) }
+func PaddingRightImpl(n int, s lipgloss.Style) lipgloss.Style  { return s.PaddingRight(n) }
+func PaddingBottomImpl(n int, s lipgloss.Style) lipgloss.Style { return s.PaddingBottom(n) }
+func PaddingLeftImpl(n int, s lipgloss.Style) lipgloss.Style   { return s.PaddingLeft(n) }
 
-func MarginImpl(top, right, bottom, left int32, s lipgloss.Style) lipgloss.Style {
-	return s.Margin(int(top), int(right), int(bottom), int(left))
+func MarginImpl(top, right, bottom, left int, s lipgloss.Style) lipgloss.Style {
+	return s.Margin(top, right, bottom, left)
 }
-func MarginTopImpl(n int32, s lipgloss.Style) lipgloss.Style    { return s.MarginTop(int(n)) }
-func MarginRightImpl(n int32, s lipgloss.Style) lipgloss.Style  { return s.MarginRight(int(n)) }
-func MarginBottomImpl(n int32, s lipgloss.Style) lipgloss.Style { return s.MarginBottom(int(n)) }
-func MarginLeftImpl(n int32, s lipgloss.Style) lipgloss.Style   { return s.MarginLeft(int(n)) }
+func MarginTopImpl(n int, s lipgloss.Style) lipgloss.Style    { return s.MarginTop(n) }
+func MarginRightImpl(n int, s lipgloss.Style) lipgloss.Style  { return s.MarginRight(n) }
+func MarginBottomImpl(n int, s lipgloss.Style) lipgloss.Style { return s.MarginBottom(n) }
+func MarginLeftImpl(n int, s lipgloss.Style) lipgloss.Style   { return s.MarginLeft(n) }
 func MarginBackgroundImpl(c color.Color, s lipgloss.Style) lipgloss.Style {
 	return s.MarginBackground(c)
 }
 
-func WidthImpl(n int32, s lipgloss.Style) lipgloss.Style     { return s.Width(int(n)) }
-func HeightImpl(n int32, s lipgloss.Style) lipgloss.Style    { return s.Height(int(n)) }
-func MaxWidthImpl(n int32, s lipgloss.Style) lipgloss.Style  { return s.MaxWidth(int(n)) }
-func MaxHeightImpl(n int32, s lipgloss.Style) lipgloss.Style { return s.MaxHeight(int(n)) }
+func WidthImpl(n int, s lipgloss.Style) lipgloss.Style     { return s.Width(n) }
+func HeightImpl(n int, s lipgloss.Style) lipgloss.Style    { return s.Height(n) }
+func MaxWidthImpl(n int, s lipgloss.Style) lipgloss.Style  { return s.MaxWidth(n) }
+func MaxHeightImpl(n int, s lipgloss.Style) lipgloss.Style { return s.MaxHeight(n) }
 
 var (
 	Top    = lipgloss.Top
@@ -106,20 +106,19 @@ func BorderBackgroundImpl(c color.Color, s lipgloss.Style) lipgloss.Style {
 	return s.BorderBackground(c)
 }
 
-func PlaceImpl(width, height int32, horizontal, vertical lipgloss.Position, text string) string {
-	return lipgloss.Place(int(width), int(height), horizontal, vertical, text)
+func PlaceImpl(width, height int, horizontal, vertical lipgloss.Position, text string) string {
+	return lipgloss.Place(width, height, horizontal, vertical, text)
 }
-func PlaceHorizontalImpl(width int32, p lipgloss.Position, text string) string {
-	return lipgloss.PlaceHorizontal(int(width), p, text)
+func PlaceHorizontalImpl(width int, p lipgloss.Position, text string) string {
+	return lipgloss.PlaceHorizontal(width, p, text)
 }
-func PlaceVerticalImpl(height int32, p lipgloss.Position, text string) string {
-	return lipgloss.PlaceVertical(int(height), p, text)
+func PlaceVerticalImpl(height int, p lipgloss.Position, text string) string {
+	return lipgloss.PlaceVertical(height, p, text)
 }
 
-// PlaceOverlayImpl draws overlay over base with its top left corner at x, y,
+// PlaceOverlayImpl draws overlay over base with its top left corner at column, row,
 // keeping the styles of both.
-func PlaceOverlayImpl(x, y int32, overlay, base string) string {
-	column, row := int(x), int(y)
+func PlaceOverlayImpl(column, row int, overlay, base string) string {
 	baseLines := strings.Split(base, "\n")
 	overlayWidth := lipgloss.Width(overlay)
 	for i, line := range strings.Split(overlay, "\n") {

@@ -56,14 +56,14 @@ package:
     - prelude
 workspace:
   packageSet:
-    url: https://raw.githubusercontent.com/rowtype-yoga/purescript-go-package-sets/go-0.1.18-20261126/packages.json
+    url: https://raw.githubusercontent.com/rowtype-yoga/purescript-go-package-sets/go-0.1.18-20261126.3/packages.json
   extraPackages:
     lipgloss:
       git: https://github.com/i-am-the-slime/purescript-lipgloss.git
-      ref: v0.1.0
+      ref: v0.2.0
 ```
 
-You need googoo 0.1.18-go.3 or newer and Go 1.27. `googoo run --go` fetches Lip Gloss itself.
+You need googoo 0.1.18-go.5 or newer and Go 1.27. `googoo run --go` fetches Lip Gloss itself.
 
 ## Colors
 

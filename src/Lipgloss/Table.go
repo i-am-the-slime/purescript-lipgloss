@@ -11,9 +11,9 @@ func RenderImpl(
 	border lipgloss.Border,
 	borderStyle lipgloss.Style,
 	top, bottom, left, right, header, columns, rowLines bool,
-	width, height, offset int32,
+	width, height, offset int,
 	wrap bool,
-	style func(int32) func(int32) lipgloss.Style,
+	style func(int) func(int) lipgloss.Style,
 ) string {
 	t := table.New().
 		Headers(headers...).
@@ -27,14 +27,14 @@ func RenderImpl(
 		BorderHeader(header).
 		BorderColumn(columns).
 		BorderRow(rowLines).
-		YOffset(int(offset)).
+		YOffset(offset).
 		Wrap(wrap).
-		StyleFunc(func(row, column int) lipgloss.Style { return style(int32(row))(int32(column)) })
+		StyleFunc(func(row, column int) lipgloss.Style { return style(row)(column) })
 	if width > 0 {
-		t = t.Width(int(width))
+		t = t.Width(width)
 	}
 	if height > 0 {
-		t = t.Height(int(height))
+		t = t.Height(height)
 	}
 	return t.String()
 }
