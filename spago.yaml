@@ -1,6 +1,6 @@
 package:
   name: lipgloss
-  description: Lip Gloss styles, borders and layout for PureScript compiled to Go with Iris
+  description: Lip Gloss styles, borders and layout for PureScript compiled to Go with googoo
   dependencies:
     - arrays
     - foldable-traversable
@@ -15,4 +15,4 @@ package:
       - spec
 workspace:
   packageSet:
-    registry: 73.2.0
+    url: https://raw.githubusercontent.com/rowtype-yoga/purescript-go-package-sets/go-0.1.18-20261126/packages.json

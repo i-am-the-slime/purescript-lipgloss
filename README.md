@@ -2,7 +2,7 @@
 
 Style text for the terminal in PureScript, with [Lip Gloss](https://github.com/charmbracelet/lipgloss):
 colors, padding, borders, alignment, and blocks you can put side by side. For PureScript compiled
-to Go with [Iris](https://github.com/i-am-the-slime/purescript-analyzer/tree/iris-go).
+to Go with [googoo](https://github.com/i-am-the-slime/iris-go-backend).
 
 ```purescript
 import Lipgloss as L
@@ -42,6 +42,28 @@ L.render (L.newStyle # L.border L.roundedBorder # L.padding 0 1 0 1) "hi"
 │ hi │
 ╰────╯
 ```
+
+## Getting it
+
+Take the [Go package set](https://github.com/rowtype-yoga/purescript-go-package-sets) and add
+`lipgloss` from here:
+
+```yaml
+package:
+  name: my-app
+  dependencies:
+    - lipgloss
+    - prelude
+workspace:
+  packageSet:
+    url: https://raw.githubusercontent.com/rowtype-yoga/purescript-go-package-sets/go-0.1.18-20261126/packages.json
+  extraPackages:
+    lipgloss:
+      git: https://github.com/i-am-the-slime/purescript-lipgloss.git
+      ref: v0.1.0
+```
+
+You need googoo 0.1.18-go.3 or newer and Go 1.27. `googoo run --go` fetches Lip Gloss itself.
 
 ## Colors
 
@@ -97,8 +119,10 @@ src
 ## Showcase
 
 ```bash
-cd examples && ./run.sh Showcase
+cd examples && googoo run --go -p lipgloss-examples --main Showcase
 ```
+
+Every style, border, table, list and tree, all on one screen.
 
 ## Changes from the old bindings
 
@@ -114,5 +138,8 @@ cd examples && ./run.sh Showcase
 
 ## Go only
 
-There are no `.js` files: this package only works with Iris's Go backend. Run `./test.sh` for the
-specs.
+There are no `.js` files: this package only works with googoo's Go backend. The specs:
+
+```bash
+googoo run --go -p lipgloss --main Test.Main
+```

@@ -79,6 +79,10 @@ specs = describe "Lipgloss" do
   it "paints spans on a shared background" do
     L.stringWidth (unpaint (chrome.plain (L.color "#FFFFFF") "abc" <> blankRow (L.color "#000000") 2)) `shouldEqual` 5
 
+  it "draws the card from the README" do
+    L.stringWidth (card "Note" "hi") `shouldEqual` 9
+    L.stringHeight (card "Note" "hi") `shouldEqual` 5
+
   it "lays out rows that fill their box" do
     L.stringWidth (Layout.renderLayout { width: 20, height: 1 } (L.color "#000000") (Layout.row [ Layout.fixed 5 (Layout.text (chrome.raw "left")), Layout.flex 1 (Layout.text (chrome.raw "right")) ]))
       `shouldEqual` 9
@@ -88,3 +92,14 @@ specs = describe "Lipgloss" do
   box = Style.do
     Border L.roundedBorder Style.all
     PadX 1
+  card title body = Style.render frame (L.joinVertical L.left [ Style.render heading title, body ])
+    where
+    frame = Style.do
+      Border L.roundedBorder Style.all
+      BorderFg C.charple
+      PadX 1
+      MarR 1
+    heading = Style.do
+      Fg C.dolly
+      Bold true
+      MarB 1

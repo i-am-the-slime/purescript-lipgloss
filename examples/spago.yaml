@@ -7,7 +7,7 @@ package:
     - prelude
 workspace:
   packageSet:
-    registry: 73.2.0
+    url: https://raw.githubusercontent.com/rowtype-yoga/purescript-go-package-sets/go-0.1.18-20261126/packages.json
   extraPackages:
     lipgloss:
       path: ..
